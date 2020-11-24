@@ -1,0 +1,8 @@
+com\zte\zshop\params\ProductParams.class
+com\zte\zshop\dao\RoleDao.class
+com\zte\zshop\dao\CustomerDao.class
+com\zte\zshop\dao\SysuserDao.class
+com\zte\zshop\dao\OrderDao.class
+com\zte\zshop\params\SysuserParam.class
+com\zte\zshop\dao\ProductDao.class
+com\zte\zshop\dao\ProductTypeDao.class

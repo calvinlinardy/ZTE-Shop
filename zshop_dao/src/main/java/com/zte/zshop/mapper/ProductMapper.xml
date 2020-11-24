@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zte.zshop.dao.ProductDao">
+
+    <sql id="productColumn">
+        id,name,price,info,image,product_type_id
+    </sql>
+    
+    <resultMap id="productMap" type="product">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="price" column="price"/>
+        <result property="info" column="info"/>
+        <result property="image" column="image"/>
+
+        <association property="productType" column="product_type_id" javaType="productType">
+            <id property="id" column="product_type_id"/>
+        </association>
+
+    </resultMap>
+    <resultMap id="productMap1" type="product">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="price" column="price"/>
+        <result property="info" column="info"/>
+        <result property="image" column="image"/>
+
+        <association property="productType" column="product_type_id" javaType="productType">
+            <id property="id" column="pt.id"/>
+            <result property="name" column="pt.name"/>
+            <result property="status" column="pt.status"/>
+        </association>
+
+    </resultMap>
+
+    <!--
+    public void insertProduct(Product product);
+    -->
+    <select id="insertProduct" parameterType="product">
+      INSERT
+      INTO
+        t_product
+        (name,price,info,image,product_type_id)
+      VALUES
+        (#{name},#{price},#{info},#{image},#{productType.id})
+    </select>
+
+    <!--
+    public Product selectByName(String name);
+    -->
+    <select id="selectByName" resultMap="productMap">
+    SELECT
+      <include refid="productColumn"/>
+    FROM
+      t_product
+    WHERE
+      name=#{name}
+    </select>
+
+    <!--
+    public List<Product> selectByEnable();
+    -->
+    <update id="updateProduct" parameterType="product">
+        UPDATE
+        t_product
+        SET
+        name=#{name},price=#{price},info=#{info},
+        <if test="image!=null">
+            image=#{image},
+        </if>
+
+        product_type_id=#{productType.id}
+        where
+        id=#{id}
+    </update>
+
+
+    <!--
+        public Product selectById(Integer id);
+
+       
+
+
+    -->
+    <select id="selectByEnable" resultMap="productMap1">
+    SELECT
+      p.id,p.name,p.price,p.info,p.image,p.product_type_id 'pt.id',
+      pt.name 'pt.name',pt.status 'pt.status'
+    FROM
+      t_product p
+    LEFT JOIN t_product_type pt
+    on
+      p.product_type_id= pt.id
+    where pt.status=1
+    </select>
+
+    <!--
+     public void updateProduct(Product product);
+    -->
+    <select id="selectById" resultMap="productMap">
+      select <include refid="productColumn"/>
+      from
+        t_product
+      where
+        id=#{id}
+    </select>
+
+    <!--
+    public void deleteById(Integer id);
+    -->
+    <delete id="deleteById">
+        DELETE
+        FROM
+          t_product
+        where
+          id=#{id}
+    </delete>
+
+    <!--
+    public List<Product> selectByParams(ProductParams productParams);
+    -->
+    <select id="selectByParams" resultMap="productMap" parameterType="com.zte.zshop.params.ProductParams">
+        SELECT
+        <include refid="productColumn"/>
+        FROM
+        t_product
+        <where>
+            <if test="name!=null and name!=''">
+               and name like concat(concat('%',#{name}),'%')
+            </if>
+            <if test="minPrice!=null and maxPrice!=null">
+               and price between #{minPrice} and #{maxPrice}
+
+            </if>
+            <if test="minPrice!=null">
+               and price &gt;=#{minPrice}
+            </if>
+            <if test="maxPrice!=null">
+               and price &lt;=#{maxPrice}
+            </if>
+            <if test="productTypeId!=null and productTypeId!=-1">
+               and product_type_id=#{productTypeId}
+            </if>
+        </where>
+    </select>
+
+
+
+
+
+</mapper>
